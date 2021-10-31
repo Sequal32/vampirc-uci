@@ -32,7 +32,7 @@ pub trait Serializable: Display {
 
 /// An enumeration type containing representations for all messages supported by the UCI protocol.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub enum UciMessage {
     /// The `uci` engine-bound message.
@@ -545,7 +545,7 @@ impl Serializable for UciMessage {
 /// This enum represents the possible variants of the `go` UCI message that deal with the chess game's time controls
 /// and the engine's thinking time.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub enum UciTimeControl {
     /// The `go ponder` message.
@@ -557,19 +557,19 @@ pub enum UciTimeControl {
     /// The information about the game's time controls.
     TimeLeft {
         /// White's time on the clock, in milliseconds.
-        #[cfg_attr(feature = "serde-1", serde(skip))]
+        #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration_none"))]
         white_time: Option<Duration>,
 
         /// Black's time on the clock, in milliseconds.
-        #[cfg_attr(feature = "serde-1", serde(skip))]
+        #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration_none"))]
         black_time: Option<Duration>,
 
         /// White's increment per move, in milliseconds.
-        #[cfg_attr(feature = "serde-1", serde(skip))]
+        #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration_none"))]
         white_increment: Option<Duration>,
 
         /// Black's increment per move, in milliseconds.
-        #[cfg_attr(feature = "serde-1", serde(skip))]
+        #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration_none"))]
         black_increment: Option<Duration>,
 
         /// The number of moves to go to the next time control.
@@ -577,7 +577,7 @@ pub enum UciTimeControl {
     },
 
     /// Specifies how much time the engine should think about the move, in milliseconds.
-    #[cfg_attr(feature = "serde-1", serde(skip))]
+    #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration"))]
     MoveTime(Duration),
 }
 
@@ -596,7 +596,7 @@ impl UciTimeControl {
 
 /// A struct that controls the engine's (non-time-related) search settings.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub struct UciSearchControl {
     /// Limits the search to these moves.
@@ -671,7 +671,7 @@ impl Default for UciSearchControl {
 
 /// Represents the copy protection or registration state.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub enum ProtectionState {
     /// Signifies the engine is checking the copy protection or registration.
@@ -686,7 +686,7 @@ pub enum ProtectionState {
 
 /// Represents a UCI option definition.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub enum UciOptionConfig {
     /// The option of type `check` (a boolean).
@@ -839,7 +839,7 @@ impl Display for UciOptionConfig {
 /// The representation of various info messages. For an info attribute that is not listed in the protocol specification,
 /// the `UciInfoAttribute::Any(name, value)` variant can be used.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub enum UciInfoAttribute {
     /// The `info depth` message.
@@ -849,7 +849,7 @@ pub enum UciInfoAttribute {
     SelDepth(u8),
 
     /// The `info time` message.
-    #[cfg_attr(feature = "serde-1", serde(skip))]
+    #[cfg_attr(feature = "serde-1", serde(serialize_with = "serialize_duration"))]
     Time(Duration),
 
     /// The `info nodes` message.
@@ -1059,7 +1059,7 @@ impl Display for UciInfoAttribute {
 
 /// An enum representing the chess piece types.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 #[cfg(not(feature = "chess"))]
 pub enum UciPiece {
@@ -1123,7 +1123,7 @@ impl FromStr for UciPiece {
 /// A representation of a chessboard square.
 #[cfg(not(feature = "chess"))]
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub struct UciSquare {
     /// The file. A character in the range of `a..h`.
@@ -1163,7 +1163,7 @@ impl Default for UciSquare {
 /// Representation of a chess move.
 #[cfg(not(feature = "chess"))]
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub struct UciMove {
     /// The source square.
@@ -1208,7 +1208,7 @@ impl Display for UciMove {
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 /// A representation of the notation in the [FEN notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation).
 pub struct UciFen(pub String);
@@ -1243,7 +1243,7 @@ pub type MessageList = Vec<UciMessage>;
 /// quick conversion to an array of bytes. Use the `::from(m: UciMessage)` to construct it. It will add the newline
 /// character `\n` to the serialized message.
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde-1", derive(Serialize))]
 #[cfg_attr(feature = "serde-1", serde(rename_all = "camelCase"))]
 pub struct ByteVecUciMessage {
     pub message: UciMessage,
@@ -1858,5 +1858,24 @@ mod tests {
             }
             _ => unreachable!(),
         }
+    }
+}
+
+#[cfg(feature = "serde-1")]
+pub fn serialize_duration<S>(x: &Duration, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_i64(x.num_seconds())
+}
+
+#[cfg(feature = "serde-1")]
+pub fn serialize_duration_none<S>(x: &Option<Duration>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    match x {
+        Some(x) => serialize_duration(x, serializer),
+        None => serializer.serialize_none(),
     }
 }
